@@ -87,9 +87,14 @@ class GMM:
 
         for key in keys:
             # Cargar URLS
-            with open(self.path_work + key + '/urls', "r") as tf:
-                lines = tf.read().split('\n')
-                tf.close()
+            if not os.path.exists(self.path_work + key + '/urls'):
+                with open(self.path_work + key + '/urls', "w") as tf:
+                    tf.write("")
+                    tf.close()
+            else:
+                with open(self.path_work + key + '/urls', "r") as tf:
+                    lines = tf.read().split('\n')
+                    tf.close()
 
             numpages = 0
 
