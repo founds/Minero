@@ -152,8 +152,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-!/Minero/Dataset/
-!/minero.egg-info/
-!/dist/
-
-!/build/
+Minero/Dataset/
+minero.egg-info/
+dist/
+build/
+.idea
