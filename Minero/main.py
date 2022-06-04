@@ -137,5 +137,10 @@ class GMM:
                     # Descontamos 1 para que la key invalida no cuente
                     numpages -= 1
 
+GMM().get_urls(
+    keys=['Fresas', 'Tomates', 'Cebollas', 'Ajos'],
+    prefixs=['Plantar', 'Sembrar'],
+    subfixs=['Maceta', 'Jardineras'])
+
 GMM().process_urls(
-    keys=['Fresas', 'Tillandsia'])
+    keys=['Fresas', 'Tomates', 'Cebollas', 'Ajos'])
