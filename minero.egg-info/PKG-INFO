@@ -1,0 +1,37 @@
+Metadata-Version: 2.1
+Name: minero
+Version: 0.0.2
+Summary: A tool for searching & extracting information...
+Home-page: https://www.altsys.es
+Author: altsys
+Author-email: info@altsys.es
+License: GNU GPLv3
+Keywords: minero search extract text csv
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: Utilities
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7, <4
+Description-Content-Type: text/markdown
+
+Minero
+-----------
+
+**Raptor** for extracting and displaying information from a set of files of the same type; and creating a single CSV file with all the selected information.
+
+The information in the files may be in multiple rows::
+
+    PC01.txt:
+    User=ms123
+    Name=Mayra Sanz
+    OS=GNU/Linux
+    IP=10.226.140.1
+
+But, also, the information may be in several columns. It is possible to read data from multiple fields in a single line::
+...
+...
+...
+

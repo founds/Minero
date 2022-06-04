@@ -1,0 +1,10 @@
+MANIFEST.in
+README.md
+README.rst
+setup.cfg
+setup.py
+Minero/main.py
+minero.egg-info/PKG-INFO
+minero.egg-info/SOURCES.txt
+minero.egg-info/dependency_links.txt
+minero.egg-info/top_level.txt
