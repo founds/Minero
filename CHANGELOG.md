@@ -8,4 +8,5 @@
 * Eliminar archivos urls menos el end.
 * Informar si no se obtiene el titulo de la web
 * opción si se quiere descargar imagenes
-* 
+* separar lista de keyword a quitar del html, para que se pueda añadir y quitar facilmente
+* pasar a minusculas los textos introducidos

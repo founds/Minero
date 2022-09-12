@@ -12,6 +12,8 @@ from includes.tools import Tools
 import configparser
 from googlesearch import search
 from colorama import Fore
+import argparse
+
 
 BLUE = Fore.BLUE
 RED = Fore.RED
@@ -57,6 +59,7 @@ class GMM:
         for key in keys:
             # limpiar keyword
             key = key.strip()
+            key = key.lower()
 
             if not os.path.exists(path_work + key):
                 print(f"Proyecto creado: {GREEN}%s{RESET}" % key)
@@ -81,23 +84,19 @@ class GMM:
 
             for prefix in prefixs:
                 for subfix in subfixs:
+                    print(f" ## KEYWORD: %s PREFIJO: %s SUBFIJO: %s ##" % (key, prefix, subfix))
                     urls = self.buscar_google(prefix + " " + key + " " + subfix, num_search, "es")
-
                     for numurl, url in enumerate(urls):
-
                         newurls = numurl + 1
-
                         if url not in lines:
                             if url not in linesko:
                                 urlsok += 1
                                 if url not in linesok:
                                     if url not in linesend:
                                         print(f"{GREEN}     - Pagina añadidas para analisis:{RESET} %s" % url)
-
                                         with open(path_work + key + '/urls-ok', 'a') as f:
                                             f.write(url + os.linesep)
                                             f.close()
-
                                         urlsok2 += 1
                                 else:
                                     urlsko += 1
@@ -200,5 +199,19 @@ class GMM:
                                 fok.close()
 
 
-GMM().get_urls(['Tomates'], ['cuidados'], ['maceta'], 2)
-GMM().process_urls(['Tomates'])
+'''GMM().process_urls(['Tomates'])'''
+
+parser = argparse.ArgumentParser(add_help=True, formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 description="""
+                                 Extractor de datos.
+                                """,
+                                 epilog="Enjoy the program! :)",)
+
+parser.add_argument('-k', '--keywords', help='Palabras clave a buscar.', nargs='+', required=True)
+parser.add_argument('-s', '--subfix', help="Añadir prefijos a las palabras clave.", nargs='+', required=True)
+parser.add_argument('-p', '--prefix', help="Añadir subfijos a las palabras clave.", nargs='+', required=True)
+parser.add_argument('-n', '--numsearch', help="Numero de busquedas a realizar.", type=int, default=2)
+
+args = parser.parse_args()
+
+GMM().get_urls(args.keywords, args.subfix, args.prefix, args.numsearch)
