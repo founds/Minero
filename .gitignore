@@ -157,3 +157,4 @@ minero.egg-info/
 dist/
 build/
 .idea
+!/CHANGELOG.md

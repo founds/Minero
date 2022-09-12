@@ -3,7 +3,7 @@
 
 __author__ = "altsys"
 __license__ = "GNU General Public License v3.0"
-__version__ = "0.0.05"
+__version__ = "0.0.06"
 __email__ = "info@altsys.es"
 
 import sys
@@ -139,16 +139,11 @@ class GMM:
                     title, result = Webs().connect(url)
 
                     if result is not None:
-                        # Comprobar si ya existe el archivo a crear
+                        if result == "timeout":
+                            print(f"   - %s -> {RED}TIME OUT{RESET}" % title)
+                            continue
 
-                        '''while status is True:
-                            if os.path.exists(path_work + key + '/tmp/' + key + '-' + str(numpages)):
-                                numpages += 1
-                                status = False
-                                print("No vale %s" % numpages)
-                            else:
-                                status = True
-                                print("vale %s" % numpages)'''
+                        # Comprobar si ya existe el archivo a crear
                         num = Tools().findIDfiles(path_work + key + '/tmp/', key, numpages)
 
                         with open(path_work + key + '/tmp/' + key + '-' + str(num), 'w') as f:

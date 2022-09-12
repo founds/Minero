@@ -66,17 +66,21 @@ class Webs():
 
         # si no hay enlace a youtube descargar texto
         if "youtube" not in web:
-            response = requests.get(web, time.sleep(5), verify=False, timeout=10, allow_redirects=False,
-                                    headers=headers)
+            try:
+                response = requests.get(web, time.sleep(5), verify=False, timeout=10, allow_redirects=False,
+                                        headers=headers)
 
-            if response.status_code == 200:
-                print("URL a Analizar: ", web)
-                source = BeautifulSoup(response.content, "html.parser")
+                if response.status_code == 200:
+                    print("URL a Analizar: ", web)
+                    source = BeautifulSoup(response.content, "html.parser")
 
-                data = self.scraping(source)
+                    data = self.scraping(source)
 
-                for items in data:
-                    title = items[0]
-                    textos = items[1]
+                    for items in data:
+                        title = items[0]
+                        textos = items[1]
 
-                return title, textos
+                    return title, textos
+            except requests.exceptions.Timeout:
+                pass
+                return web, "timeout"
