@@ -9,72 +9,74 @@ __email__ = "info@altsys.es"
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import time
-import os
-import re
 from bs4 import BeautifulSoup
+import re
+#from lxml.html.clean import Cleaner
 
 
 class Webs():
     def __init__(self):
         pass
 
+    def clean_html(self, html):
+
+        for data in html(['style', 'script', 'noscript', 'footer', 'meta', 'code', 'button', 'header', 'img', 'nav']):
+            # Remove tags
+            data.decompose()
+
+        return html
+
+    def clean_text(self, pretexts):
+        # Make lower
+        text = pretexts.lower()
+
+        # Remove line breaks
+        text = re.sub(r'\n\n\n', '', text)
+
+        return text
+
     # Analizar la pagina web
     def scraping(self, source):
-        tags = []
-        links = []
-        formatted_article_text = ""
-        try:
-            url = source.find("meta", property="og:url")["content"]
-            pre_tags = source.find_all("meta", property="article:tag")
-            paragraphs = source.findAll('p')
+        paragraphs = []
+        titleweb = ""
+        datahtml = source
+        dataText = self.clean_html(datahtml)
+        dataFormat = self.clean_text(dataText.text.strip())
 
-            article_text = ""
+        for title in source.find_all('title'):
+            titleweb = title.text
 
-            for p in paragraphs:
-                article_text += p.text
+        paragraphs.append([titleweb, dataFormat,])
 
-            # Removing Square Brackets and Extra Spaces
-            article_text = re.sub(r'\[[0-9]*\]', ' ', article_text)
-            article_text = re.sub(r'\s+', ' ', article_text)
-
-            # Removing special characters and digits
-            # formatted_article_text = re.sub('[^a-zA-Z]', ' ', article_text)
-            formatted_article_text = re.sub(r'\s+', ' ', article_text)
-
-            for tag in pre_tags:
-                tags.append(tag["content"])
-
-            # Detectar todas las URLS
-            for link in source.find_all('a', href=True):
-                links.append(link['href'])
-        except:
-            tags.append('')
-            url = ""
-            links.append('')
-
-        return tags, url, links, formatted_article_text
+        return paragraphs
 
     # Conectar con la fuente
     def connect(self, web):
-        try:
-            # Quitar los warnings de HTTPS no verificados
-            requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+        # Quitar los warnings de HTTPS no verificados
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-            # si no hay enlace a youtube descargar texto
-            if "youtube" not in web:
-                # con , verify=False nos saltamos la verificación ssl
-                # timeout=20 dar un timeout a los 20 segundos
-                response = requests.get(web, time.sleep(5), verify=False, timeout=10, allow_redirects=False)
+        headers = requests.utils.default_headers()
 
-                if response.status_code == 200:
-                    print("URL a Analizar: ", web)
-                    texto = BeautifulSoup(response.text, "html.parser")
+        headers.update(
+            {
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                              'Chrome/51.0.2704.103 Safari/537.36',
+            }
+        )
 
-                    tags, web, links, parrafos = self.scraping(texto)
+        # si no hay enlace a youtube descargar texto
+        if "youtube" not in web:
+            response = requests.get(web, time.sleep(5), verify=False, timeout=10, allow_redirects=False,
+                                    headers=headers)
 
-                    return parrafos
-            else:
-                print("youtube")
+            if response.status_code == 200:
+                print("URL a Analizar: ", web)
+                source = BeautifulSoup(response.content, "html.parser")
 
-        except:
-            pass
+                data = self.scraping(source)
+
+                for items in data:
+                    title = items[0]
+                    textos = items[1]
+
+                return title, textos
