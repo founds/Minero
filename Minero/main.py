@@ -3,7 +3,7 @@
 
 __author__ = "altsys"
 __license__ = "GNU General Public License v3.0"
-__version__ = "0.0.06"
+__version__ = "0.0.07"
 __email__ = "info@altsys.es"
 
 import sys
@@ -200,5 +200,5 @@ class GMM:
                                 fok.close()
 
 
-GMM().get_urls(['Tomates'], ['cuidados'], ['maceta'], 50)
+GMM().get_urls(['Tomates'], ['cuidados'], ['maceta'], 2)
 GMM().process_urls(['Tomates'])

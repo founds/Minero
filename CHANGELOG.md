@@ -5,7 +5,7 @@
 
 ## Lista de futuras funciones
 * Comprobar si la url esta ya en urls-end y no añadir si ya existe.
-* Eliminar archivos urls menos el end
-* Mostrar que no ha encontrado el texto del titulo de la web
-* pasar gestión de archivos temporales a una clase
+* Eliminar archivos urls menos el end.
+* Informar si no se obtiene el titulo de la web
+* opción si se quiere descargar imagenes
 * 

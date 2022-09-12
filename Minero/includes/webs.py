@@ -3,7 +3,7 @@
 
 __author__ = "altsys"
 __license__ = "GNU General Public License v3.0"
-__version__ = "0.0.02"
+__version__ = "0.0.03"
 __email__ = "info@altsys.es"
 
 import requests
@@ -20,7 +20,10 @@ class Webs():
 
     def clean_html(self, html):
 
-        for data in html(['style', 'script', 'noscript', 'footer', 'meta', 'code', 'button', 'header', 'img', 'nav']):
+        for data in html(['style', 'script', 'noscript', 'footer', 'meta', 'code', 'button', 'header', 'img', 'nav',
+                          {'class': 'aawp', 'class': 'snippet-box', 'class': 'entry-related',
+                           'id': 'comments', 'class': 'social-share_box', 'class': 'author-box',
+                           'class': 'entry-comments', 'class': 'footer-widgets', 'class': 'site-header'}]):
             # Remove tags
             data.decompose()
 
