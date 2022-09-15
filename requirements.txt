@@ -1,4 +1,4 @@
 colorama~=0.4.5
 requests~=2.25.1
 beautifulsoup4~=4.9.3
-setuptools~=57.0.0
+setuptools~=65.3.0

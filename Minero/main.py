@@ -10,7 +10,6 @@ import sys
 import os
 from includes.tools import Tools
 import configparser
-from googlesearch import search
 from colorama import Fore
 import argparse
 
@@ -41,12 +40,10 @@ class GMM:
 
         print(f"{BLUE}Path del Dataset:{RESET} %s" % self.path_dataset)
 
-    # Buscar en google
-    def buscar_google(self, query, num, lang):
-        return search(query, num_results=num, lang=lang)
-
     # Obtencion de urls
-    def get_urls(self, keys=[], prefixs=[], subfixs=[], num_search=0):
+    def get_urls(self, keys=[], prefixs=[], subfixs=[], num_search=1):
+        from includes.webs import Webs
+
         newurls = 0
         urlsok = 0
         urlsok2 = 0
@@ -85,7 +82,7 @@ class GMM:
             for prefix in prefixs:
                 for subfix in subfixs:
                     print(f" ## KEYWORD: %s PREFIJO: %s SUBFIJO: %s ##" % (key, prefix, subfix))
-                    urls = self.buscar_google(prefix + " " + key + " " + subfix, num_search, "es")
+                    urls = Webs().buscar_google(prefix + " " + key + " " + subfix, num_search, "es")
                     for numurl, url in enumerate(urls):
                         newurls = numurl + 1
                         if url not in lines:
@@ -133,10 +130,12 @@ class GMM:
                 tf.close()
 
             for url in lines:
-
                 if url != "":
-                    title, result = Webs().connect(url)
-
+                    try:
+                        title, result = Webs().connect(url)
+                    except:
+                        print(f"Error al procesar: %s" % url)
+                        pass
                     if result is not None:
                         if result == "timeout":
                             print(f"   - %s -> {RED}TIME OUT{RESET}" % title)
@@ -199,8 +198,6 @@ class GMM:
                                 fok.close()
 
 
-'''GMM().process_urls(['Tomates'])'''
-
 parser = argparse.ArgumentParser(add_help=True, formatter_class=argparse.RawDescriptionHelpFormatter,
                                  description="""
                                  Extractor de datos.
@@ -214,4 +211,7 @@ parser.add_argument('-n', '--numsearch', help="Numero de busquedas a realizar.",
 
 args = parser.parse_args()
 
-GMM().get_urls(args.keywords, args.subfix, args.prefix, args.numsearch)
+status = GMM().get_urls(args.keywords, args.subfix, args.prefix, args.numsearch)
+
+if status is True:
+    GMM().process_urls(args.keywords)

@@ -11,15 +11,26 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import time
 from bs4 import BeautifulSoup
 import re
-#from lxml.html.clean import Cleaner
+try:
+    from googlesearch import search
+except ImportError:
+    print("No module named 'google' found")
 
 
 class Webs():
     def __init__(self):
         pass
 
-    def clean_html(self, html):
+    # Buscar en google
+    def buscar_google(self, query, num, lang):
+        webs = []
+        for j in search(query, tld="co.in", num=num, stop=num, pause=3):
+            if "youtube" not in j:
+                webs.append(j)
 
+        return webs
+
+    def clean_html(self, html):
         for data in html(['style', 'script', 'noscript', 'footer', 'meta', 'code', 'button', 'header', 'img', 'nav',
                           {'class': 'aawp', 'class': 'snippet-box', 'class': 'entry-related',
                            'id': 'comments', 'class': 'social-share_box', 'class': 'author-box',
@@ -47,9 +58,13 @@ class Webs():
         dataFormat = self.clean_text(dataText.text.strip())
 
         for title in source.find_all('title'):
-            titleweb = title.text
+            if title.text is not None:
+                titleweb = title.text
+                titleweb = titleweb.lstrip()
+            else:
+                titleweb = "No se ha podido obtener el titulo de la web."
 
-        paragraphs.append([titleweb, dataFormat,])
+        paragraphs.append([titleweb, dataFormat, ])
 
         return paragraphs
 
