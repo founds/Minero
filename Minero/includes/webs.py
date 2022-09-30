@@ -3,13 +3,14 @@
 
 __author__ = "altsys"
 __license__ = "GNU General Public License v3.0"
-__version__ = "0.0.03"
+__version__ = "0.0.04"
 __email__ = "info@altsys.es"
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import time
 from bs4 import BeautifulSoup
+from PIL import Image
 import re
 try:
     from googlesearch import search
@@ -31,10 +32,12 @@ class Webs():
         return webs
 
     def clean_html(self, html):
-        for data in html(['style', 'script', 'noscript', 'footer', 'meta', 'code', 'button', 'header', 'img', 'nav',
-                          {'class': 'aawp', 'class': 'snippet-box', 'class': 'entry-related',
+        for data in html(['a[href^="mailto:"]', 'style', 'script', 'noscript', 'footer', 'meta', 'code', 'button',
+                          'header', 'img', 'nav', {'class': 'aawp', 'class': 'snippet-box', 'class': 'entry-related',
                            'id': 'comments', 'class': 'social-share_box', 'class': 'author-box',
-                           'class': 'entry-comments', 'class': 'footer-widgets', 'class': 'site-header'}]):
+                           'class': 'entry-comments', 'class': 'footer-widgets', 'class': 'site-header',
+                           'id': 'toc_container', 'class': 'tags', 'class': 'related_articles',
+                           'class': 'kk-star-ratings'}]):
             # Remove tags
             data.decompose()
 
@@ -45,7 +48,24 @@ class Webs():
         text = pretexts.lower()
 
         # Remove line breaks
-        text = re.sub(r'\n\n\n', '', text)
+        text = re.sub(r'\n\n', '', text)
+
+        # Remove symbols
+        symbols = r'[,;.:¡!¿?@#$%&[\](){}<>~=+\-*/|\\_^`"\']'
+        texto = re.sub(symbols, ' ', text)
+
+        # dígits [0-9]
+        text = re.sub('\d', ' ', text)
+
+        # tildes y diacríticas
+        text = re.sub('á', 'a', text)
+        text = re.sub('é', 'e', text)
+        text = re.sub('í', 'i', text)
+        text = re.sub('ó', 'o', text)
+        text = re.sub('ú', 'u', text)
+        text = re.sub('ü', 'u', text)
+        text = re.sub('ñ', 'n', text)
+        text = re.sub('δ', 'o', text)
 
         return text
 
@@ -57,6 +77,7 @@ class Webs():
         dataText = self.clean_html(datahtml)
         dataFormat = self.clean_text(dataText.text.strip())
 
+        # Title
         for title in source.find_all('title'):
             if title.text is not None:
                 titleweb = title.text
@@ -99,6 +120,7 @@ class Webs():
                         textos = items[1]
 
                     return title, textos
+
             except requests.exceptions.Timeout:
                 pass
                 return web, "timeout"

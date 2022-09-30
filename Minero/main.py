@@ -3,7 +3,7 @@
 
 __author__ = "altsys"
 __license__ = "GNU General Public License v3.0"
-__version__ = "0.0.07"
+__version__ = "0.0.08"
 __email__ = "info@altsys.es"
 
 import sys
@@ -12,7 +12,6 @@ from includes.tools import Tools
 import configparser
 from colorama import Fore
 import argparse
-
 
 BLUE = Fore.BLUE
 RED = Fore.RED
@@ -24,7 +23,7 @@ class GMM:
     def __init__(self):
         self.path = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-        print(f"{BLUE}Path de ejecución:{RESET} %s" % (self.path,))
+        #print(f"{BLUE}Path de ejecución:{RESET} %s" % (self.path,))
 
         if not os.path.exists(self.path + '/config.cfg'):
             print(f"{RED}No existe el archivo de configuración.{RESET}")
@@ -38,7 +37,7 @@ class GMM:
         if not os.path.exists(self.path_dataset):
             os.mkdir(self.path_dataset)
 
-        print(f"{BLUE}Path del Dataset:{RESET} %s" % self.path_dataset)
+        #print(f"{BLUE}Path del Dataset:{RESET} %s" % self.path_dataset)
 
     # Obtencion de urls
     def get_urls(self, keys=[], prefixs=[], subfixs=[], num_search=1):
@@ -50,8 +49,6 @@ class GMM:
         urlsko = 0
 
         path_work = self.path_dataset + "/pre/"
-
-        print("\nLogs:")
 
         for key in keys:
             # limpiar keyword
@@ -125,6 +122,9 @@ class GMM:
             if not os.path.exists(path_work + key + '/tmp/'):
                 os.mkdir(path_work + key + '/tmp/')
 
+            if not os.path.exists(path_work + key + '/images/'):
+                os.mkdir(path_work + key + '/images/')
+
             with open(path_work + key + '/urls-ok', "r") as tf:
                 lines = tf.read().split('\n')
                 tf.close()
@@ -133,76 +133,39 @@ class GMM:
                 if url != "":
                     try:
                         title, result = Webs().connect(url)
+
+                        if result is not None:
+                            if result == "timeout":
+                                print(f"   - %s -> {RED}TIME OUT{RESET}" % title)
+                                continue
+
+                            # Comprobar si ya existe el archivo a crear
+                            num = Tools().findIDfiles(path_work + key + '/tmp/', key, numpages)
+
+                            with open(path_work + key + '/tmp/' + key + '-' + str(num), 'w') as f:
+                                for i in result:
+                                    f.write(i)
+                                f.close()
+
+                            num += 1
+
+                            Tools().writeFilesOK(path_work, key, url)
+                            print(f"   - %s -> {GREEN}OK{RESET}" % title)
+
+                        else:
+                            Tools().writeFilesKO(path_work, key, url)
+                            print(f"\n !!!! %s: {RED}KO{RESET} !!!! \n" % url)
+
                     except:
                         print(f"Error al procesar: %s" % url)
                         pass
-                    if result is not None:
-                        if result == "timeout":
-                            print(f"   - %s -> {RED}TIME OUT{RESET}" % title)
-                            continue
-
-                        # Comprobar si ya existe el archivo a crear
-                        num = Tools().findIDfiles(path_work + key + '/tmp/', key, numpages)
-
-                        with open(path_work + key + '/tmp/' + key + '-' + str(num), 'w') as f:
-                            for i in result:
-                                f.write(i)
-                            f.close()
-
-                        num += 1
-
-                        print(f"   - %s -> {GREEN}OK{RESET}" % title)
-                        with open(path_work + key + '/urls-end', 'a') as fend:
-                            fend.write(url + os.linesep)
-                            fend.close()
-
-                        with open(path_work + key + '/urls-ok', 'r+') as fok:
-                            lines = fok.readlines()
-                            fok.seek(0)
-                            fok.truncate()
-
-                            if url not in lines:
-                                fok.write(url + os.linesep)
-                                fok.close()
-
-                        with open(path_work + key + '/urls', 'r+') as flst:
-                            lines = flst.readlines()
-                            flst.seek(0)
-                            flst.truncate()
-
-                            if url not in lines:
-                                flst.write(url + os.linesep)
-                                flst.close()
-                    else:
-                        print(f"\n !!!! %s: {RED}KO{RESET} !!!! \n" % url)
-                        with open(path_work + key + '/urls-ko', 'a') as fko:
-                            fko.write(url + os.linesep)
-                            fko.close()
-
-                        with open(path_work + key + '/urls', 'r+') as flst:
-                            lines = flst.readlines()
-                            flst.seek(0)
-                            flst.truncate()
-
-                            if url not in lines:
-                                flst.write(url + os.linesep)
-                                flst.close()
-
-                        with open(path_work + key + '/urls-ok', 'r+') as fok:
-                            lines = fok.readlines()
-                            fok.seek(0)
-                            fok.truncate()
-
-                            if url not in lines:
-                                fok.write(url + os.linesep)
-                                fok.close()
 
 
 parser = argparse.ArgumentParser(add_help=True, formatter_class=argparse.RawDescriptionHelpFormatter,
                                  description="""
                                  Extractor de datos.
                                 """,
-                                 epilog="Enjoy the program! :)",)
+                                 epilog="Enjoy the program! :)", )
 
 parser.add_argument('-k', '--keywords', help='Palabras clave a buscar.', nargs='+', required=True)
 parser.add_argument('-s', '--subfix', help="Añadir prefijos a las palabras clave.", nargs='+', required=True)
